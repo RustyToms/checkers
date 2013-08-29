@@ -10,7 +10,7 @@ class Checkers
   def play
     unless board.victory?
       board.print_board
-      players[0].get_move
+      board.make_move = players[0].get_move
       players.reverse!
     end
 
