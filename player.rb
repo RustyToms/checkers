@@ -13,26 +13,22 @@ class Player
   end
 
   def get_move
-    #gets players move
-    puts "Where would you like to move from and to?  (e.g. a3 b4)"
+    puts "#{self.name}, where would you like to move from and to?"
+    puts "(column number then row, e.g. 02 13)"
     input = gets.chomp
-    #validates players move
-    #  makes sure the move is typed correctly
+
+    translate_input(input)
     move = translate_input(input)
-    #  make sure the move is available from the piece
-    validate_move(move)
-    #return move
+
     move
   end
 
   def translate_input(input)
-    #change input to move and return it, raise error if needed
-    x2 = (x1 - y1) / 2 + 3
-    y2 = (x1 - y1) / 2 - x1 + 7
-    [x2, y2]
+    input.gsub!(/[^0-7]/, "")
+    raise ArgumentError.new "4 numbers needed." unless input.length == 4
+    from = [input[0].to_i, input[1].to_i]
+    to = [input[2].to_i, input[3].to_i]
+    [from, to]
   end
 
-  def validate_move(move)
-    #makes sure move is available
-  end
 end

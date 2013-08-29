@@ -6,13 +6,13 @@ class CheckerBoard
   attr_accessor :board
 
   def initialize
-    player1_pieces = {color: "white", direction: [1], name: "☺" }#.on_green}
-    player2_pieces = {color: "black", direction: [-1], name: "☻" }#.on_green}
+    player1_pieces = {color: "white", direction: [1, 2], name: "☺" }
+    player2_pieces = {color: "black", direction: [-1, -2], name: "☻" }
     @board = make_board(player1_pieces, player2_pieces)
   end
 
   def make_board(player1_pieces, player2_pieces)
-    #makes board
+
     new_board = Hash.new
     (0..7).each do |col|
       (0..7).each do |row|
@@ -27,23 +27,20 @@ class CheckerBoard
   end
 
   def print
-    letters = ("A".."H").map(&:to_s).map { |char| char }.join
-    numbers = ("1".."8").map { |char| char }
-    puts " #{letters}"
+    # letters = ("0".."7").map(&:to_s).map { |char| char }.join
+    numbers = ("0".."7").map { |char| char }
+    puts "  #{numbers.join("  ")}"
 
     7.downto(0) do |y|
       row = [numbers[y]]
       8.times do |x|
-        # puts "board x y is #{board[[x, y]]}"
-        # puts "x + y = #{(x + y)}"
         if !board[[x, y]].nil?
-          row << board[[x, y]].name
+          row << " #{board[[x, y]]} "
         elsif (x + y).even?
-          row << " "#.on_green
+          row << "   "
         else
-          row << " ".on_red
+          row << "   ".on_red
         end
-        # puts "#{row.last} was added to row"
       end
 
       row << numbers[y]
@@ -52,23 +49,42 @@ class CheckerBoard
       puts row
     end
 
-    puts " #{letters}"
+    puts "  #{numbers.join("  ")}"
   end
 
   def victory?
     color = ["white", "black"]
-    #are there only pieces of one color remaining?
     board.each_value{ |piece| color.delete(piece.color) }
     return true unless color.empty?
   end
 
-  def make_move(move) #takes an array of arrays [from, to]
-    #moves already tested for validity
-    #piece moved from one loc to another
-    #piece told that it moved, piece.move(move)
-    board[move[1]] = board[move[0]]
-    board[move[0]].delete
-    board[move[1]].pos = move[1]
+  def make_move(move, color)
+    go_again = false
+    from, to = move
+    dx = to[0] - from[0]
+    dy = to[1] - from[1]
+    piece = board[from]
+    if piece.nil? or piece.color != color
+      raise ArgumentError.new "can't move that."
+    end
+    raise ArgumentError.new "wrong direction." unless piece.delta.include?(dy)
+    raise ArgumentError.new "invalid position." unless dy.abs == dx.abs
+    raise ArgumentError.new "position full." unless board[to].nil?
+
+    if dx.abs == 2
+      jumped = [(from[0] + dx / 2), (from[1] + dy / 2)]
+      if board[jumped].nil? || board[jumped].color == piece.color
+        raise ArgumentError.new "can't jump that."
+      end
+      go_again = true
+      board.delete(jumped)
+    end
+
+    board[to] = piece
+    board.delete(from)
+    piece.move(to)
+
+    go_again
   end
 
 end

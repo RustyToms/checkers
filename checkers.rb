@@ -12,17 +12,22 @@ class Checkers
   end
 
   def play
-    unless board.victory?
-      board.print
-      board.make_move = players[0].get_move
-      players.reverse!
+    until board.victory?
+      begin
+        board.print
+        new_move = players[0].get_move
+        players.reverse! unless board.make_move(new_move, players[0].color)
+      rescue => msg
+        puts "Invalid move, #{msg}".on_green.blink
+        retry
+      end
     end
 
-    puts "#{player[1]} wins!!!!!!!!!!!!!!!!!!!!!!".blink
+    puts "#{players[0]} wins!!!!!!!!!!!!!!!!!!!!!!".blink
 
   end
 
 end
 
 test = Checkers.new
-test.board.print
+test.play

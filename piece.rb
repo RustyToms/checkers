@@ -1,32 +1,27 @@
 # encoding: utf-8
 class Piece
-  attr_accessor :pos, :directions, :name
+  attr_accessor :pos, :delta, :name
   attr_reader :color
 
   def initialize(pos, info_hsh)
     @color = info_hsh[:color]
-    @directions = info_hsh[:direction]
+    @delta = info_hsh[:direction]
     @name = info_hsh[:name]
     @pos = pos
 
   end
 
-  def move(move) #move == [from, to], array of arrays
-    #piece changes its location
-    #if location is end of board, piece becomes king
+  def move(new_pos)
+    self.pos = new_pos
+    if [self.pos[1], self.color] == 7 && self.color == "white"
+      king_me
+    elsif self.pos[1] == 0 && self.color == "black"
+      king_me
+    end
   end
 
-  def possible_moves
-    #all moves in the direction of self.direction either in the row or over to the next column
-    #if any enemy pieces are in those locations, those locations are replaced with the locations beyond them, but only if they are empty.
-  end
-
-  def pos_x  #translates hash location x to standard board location x
-    (pos[0] - pos[1] + 4)
-  end
-
-  def pos_y #translates hash location y to standard board location y
-    (10 - pos[0] - pos[1])
+  def to_s
+    self.name
   end
 
   def king_me
