@@ -27,6 +27,9 @@ class Player
 
   def translate_input(input)
     #change input to move and return it, raise error if needed
+    x2 = (x1 - y1) / 2 + 3
+    y2 = (x1 - y1) / 2 - x1 + 7
+    [x2, y2]
   end
 
   def validate_move(move)

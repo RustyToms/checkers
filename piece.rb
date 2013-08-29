@@ -1,12 +1,13 @@
-
+# encoding: utf-8
 class Piece
-  attr_accessor :location, directions
+  attr_accessor :pos, :directions, :name
   attr_reader :color
 
-  def intialize(color, direction)
-    @color = color
-    @king_status = false
-    @directions = direction  #array with either 1 or -1, gets both when kinged
+  def initialize(pos, info_hsh)
+    @color = info_hsh[:color]
+    @directions = info_hsh[:direction]
+    @name = info_hsh[:name]
+    @pos = pos
 
   end
 
@@ -18,6 +19,19 @@ class Piece
   def possible_moves
     #all moves in the direction of self.direction either in the row or over to the next column
     #if any enemy pieces are in those locations, those locations are replaced with the locations beyond them, but only if they are empty.
+  end
+
+  def pos_x  #translates hash location x to standard board location x
+    (pos[0] - pos[1] + 4)
+  end
+
+  def pos_y #translates hash location y to standard board location y
+    (10 - pos[0] - pos[1])
+  end
+
+  def king_me
+    self.directions = [1, -1]
+    self.name = (color == "white" ? ♔.on_green : ♚.on_green)
   end
 
 end
