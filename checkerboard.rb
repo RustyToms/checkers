@@ -59,32 +59,47 @@ class CheckerBoard
   end
 
   def make_move(move, color)
-    go_again = false
-    from, to = move
-    dx = to[0] - from[0]
-    dy = to[1] - from[1]
-    piece = board[from]
+    from, to, dx, dy, piece = split_move_parts(move)
+
     if piece.nil? or piece.color != color
       raise ArgumentError.new "can't move that."
     end
     raise ArgumentError.new "wrong direction." unless piece.delta.include?(dy)
     raise ArgumentError.new "invalid position." unless dy.abs == dx.abs
+    p to; p " + "; p board[to]
     raise ArgumentError.new "position full." unless board[to].nil?
 
-    if dx.abs == 2
-      jumped = [(from[0] + dx / 2), (from[1] + dy / 2)]
-      if board[jumped].nil? || board[jumped].color == piece.color
-        raise ArgumentError.new "can't jump that."
-      end
-      go_again = true
-      board.delete(jumped)
-    end
+    jumped = is_valid_jump(move, color)
+    board.delete(jumped)
 
     board[to] = piece
     board.delete(from)
     piece.move(to)
 
-    go_again
+    jumped
   end
+
+  def split_move_parts(move)
+    from, to = move
+    dx = to[0] - from[0]
+    dy = to[1] - from[1]
+    piece = board[from]
+    [from, to, dx, dy, piece]
+  end
+
+  def is_valid_jump(move, color)
+    from, to, dx, dy, piece = split_move_parts(move)
+    return false unless dx.abs == 2 && dy.abs == 2 && board[to].nil?
+    return false unless piece.delta.include?(dy)
+
+    jumped = [(from[0] + dx / 2), (from[1] + dy / 2)]
+    if board[jumped].nil? || board[jumped].color == piece.color
+      return false
+    end
+
+    jumped
+  end
+
+  # make_jump
 
 end

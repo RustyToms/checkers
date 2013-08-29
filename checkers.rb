@@ -6,24 +6,21 @@ require "./player.rb"
 
 class Checkers
   attr_reader :board, :players
+
   def initialize
     @board = CheckerBoard.new
-    @players = [Player.new("Player1", "white"), Player.new("Player2", "black")]
+    @players = [Player.new("Player1", "white", board)]
+    @players << Player.new("Player2", "black", board)
   end
 
   def play
     until board.victory?
-      begin
         board.print
-        new_move = players[0].get_move
-        players.reverse! unless board.make_move(new_move, players[0].color)
-      rescue => msg
-        puts "Invalid move, #{msg}".on_green.blink
-        retry
-      end
+        players[0].make_move
+        players.reverse!
     end
 
-    puts "#{players[0]} wins!!!!!!!!!!!!!!!!!!!!!!".blink
+    puts "#{players[1]} wins!!!!!!!!!!!!!!!!!!!!!!".blink
 
   end
 
